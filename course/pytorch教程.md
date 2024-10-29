@@ -4,10 +4,18 @@
 * 链接主机：ssh zhouxingyu@192.168.3.72
 * 环境：conda activate pytorch
 **使用tensorboard查看写入log的函数:**
-1.  查看命令：
-tensorboard --logdir="/home/zhangxiaohong/zhouxingyu/demo/python/logs" --port=6552
-2.  （本地cmd）ssh端口转发到本地6552：
-ssh -L 6552:localhost:6552 zhouxingyu@192.168.3.72
+1. 查看命令：
+   tensorboard --logdir="/home/zhangxiaohong/zhouxingyu/demo/machineLearning/logs" --port=6552
+2. （本地cmd）ssh端口转发到本地6552：
+   ssh -L 6552:localhost:6552 zhouxingyu@192.168.3.72
+
+查看cuda：
+```
+# 其中-n后面的1表示的是每隔多少时间（单位是s）刷新一次
+watch -n 1 nvidia-smi
+# 或者
+nvidia-smi
+```
 ### 1.1 函数
 * dir()：查看包/函数
 * help():说明
@@ -254,7 +262,7 @@ writer.close()
 
 ![image-20241015211353698](C:\Users\86151\Desktop\img\image-20241015211353698.png)
 
-## 2.神经网络搭建
+## 2.神经网络搭建(卷积)
 ### 2.1 结构
 **1. 输入层**
 **2. 隐藏层**
@@ -854,7 +862,7 @@ step3：更新权重![image-20241021150331695](pytorch教程.assets/image-202410
 6. Adam
 
   	累计梯度：![image-20241021155915555](pytorch教程.assets/image-20241021155915555.png)
-
+  	
   	学习率，累计平方梯度：![image-20241021155926083](pytorch教程.assets/image-20241021155926083.png)
 
 ​	偏差纠正：![image-20241021155935656](pytorch教程.assets/image-20241021155935656.png)
