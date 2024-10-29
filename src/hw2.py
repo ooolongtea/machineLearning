@@ -21,7 +21,7 @@ class TIMITDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
-
+# 模型
 class Classifier(nn.Module):
     def __init__(self):
         super(Classifier, self).__init__()
