@@ -3,10 +3,11 @@ from torch.utils.data import Dataset, DataLoader
 import torch
 import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
-
+import datetime
 
 class TIMITDataset(Dataset):
-    def __init__(self, X, y=None):
+    def __init__(self, X, y=None, window_size=11):
+        self.window_size=window_size
         self.data = torch.from_numpy(X).float()
         if y is not None:
             y = y.astype(int)
@@ -14,20 +15,41 @@ class TIMITDataset(Dataset):
         else:
             self.label = None
 
+        self.windowed_data = self.create_windows(self.data)
+        if self.label is not None:
+            self.windowed_labels = self.create_window_labels(self.label)
+
+    def create_windows(self, data):
+        # 确保数据是二维的
+        num_samples = data.shape[0]
+        half_window = self.window_size // 2
+        windows = []
+
+        for i in range(half_window, num_samples - half_window):
+            window = data[i - half_window:i + half_window + 1]  # 包含上下各5个点(左闭右开)
+            windows.append(window)
+
+        return torch.stack(windows)
+
+    def create_window_labels(self, labels):
+        half_window = self.window_size // 2
+        return labels[half_window:-half_window]  # 标签与窗口中心对齐
+
     def __getitem__(self, idx):
         if self.label is not None:
-            return self.data[idx], self.label[idx]
+            return self.windowed_data[idx], self.windowed_labels[idx]
         else:
-            return self.data[idx]
+            return self.windowed_data[idx]
 
     def __len__(self):
-        return len(self.data)
+        return len(self.windowed_data)
+
 
 # 模型
 class Classifier(nn.Module):
     def __init__(self):
         super(Classifier, self).__init__()
-        self.layer1 = nn.Linear(429, 1024)
+        self.layer1 = nn.Linear(11*429, 1024)
         # 添加归一化
         self.bn1 = nn.BatchNorm1d(1024)
         # 添加正则化
@@ -43,6 +65,7 @@ class Classifier(nn.Module):
         self.act_fn = nn.ReLU()
 
     def forward(self, x):
+        x = x.view(x.size(0), -1)  # Flatten the input
         x = self.layer1(x)
         x = self.bn1(x)
         x = self.dropout1(x)
@@ -75,7 +98,9 @@ def same_seeds(seed):
     np.random.seed(seed)
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
-writer=SummaryWriter('../logs')
+# 获取当前时间戳
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+writer=SummaryWriter(f'../logs/hw2/{timestamp}')
 
 data_root='../dataset/timit_11/'
 train = np.load(data_root + 'train_11.npy')
