@@ -19,15 +19,43 @@ class Net(nn.Module):
         # self.fc2 = nn.Linear(64, 10)
 
         self.model = nn.Sequential(
+            # Conv2d(3, 32, 5, padding=2),
+            # nn.BatchNorm2d(32),
+            # nn.ReLU(),
+            # # MaxPool2d(2, 2),
+            # Conv2d(32, 32, 5, padding=2),
+            # nn.BatchNorm2d(32),
+            # nn.ReLU(),
+            # MaxPool2d(2, 2),
+            # Conv2d(32, 64, 5, padding=2),
+            # nn.BatchNorm2d(64),
+            # nn.ReLU(),
+            # # MaxPool2d(2, 2),
+            # Flatten(),
+            # Linear(1024, 64),
+            # nn.ReLU(),
+            # nn.Dropout(0.5),
+            # Linear(64, 10)
             Conv2d(3, 32, 5, padding=2),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
             MaxPool2d(2, 2),
+
             Conv2d(32, 32, 5, padding=2),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
             MaxPool2d(2, 2),
+
             Conv2d(32, 64, 5, padding=2),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
             MaxPool2d(2, 2),
+
             Flatten(),
-            Linear(1024, 64),
-            Linear(64, 10)
+            Linear(64 * 4 * 4, 128),  # 根据特征图的尺寸调整
+            nn.ReLU(),
+            nn.Dropout(0.5),
+            Linear(128, 10)
         )
 
     def forward(self, x):

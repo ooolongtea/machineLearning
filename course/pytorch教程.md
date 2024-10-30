@@ -6,6 +6,9 @@
 **使用tensorboard查看写入log的函数:**
 1. 查看命令：
    tensorboard --logdir="/home/zhangxiaohong/zhouxingyu/demo/machineLearning/logs" --port=6552
+
+   tensorboard --logdir="E:/pythonworksation/MachineLearning/logs" --port=6552（自己的电脑）
+
 2. （本地cmd）ssh端口转发到本地6552：
    ssh -L 6552:localhost:6552 zhouxingyu@192.168.3.72
 
@@ -360,12 +363,15 @@ for data in dataloader:
 ### 2.3 池化层
 
 降低特征图维度，减少参数，控制过拟合和提取主要特征，增强特征表示的平移不变性
+
+主要是降低运算量，也可以不使用
+
+![image-20241030103238052](pytorch教程.assets/image-20241030103238052.png)
+
 #### 2.3.1 常见的池化操作：
 1. 最大池化：从局部区域中取最大值，通常用于保留最显著的特征。
 $$
-\[
 H' = \left\lfloor \frac{H + 2p - k}{s} \right\rfloor + 1
-\]
 $$
 输入特征图HxW，步幅s，填充p
  ```python
