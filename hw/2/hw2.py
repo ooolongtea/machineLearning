@@ -5,6 +5,11 @@ import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
 import datetime
 
+# 下载后解压缩
+# gdown --id '1HPkcmQmFGu-3OknddKIa5dNDsR05lIQR' --output data.zip
+# unzip data.zip
+# ls
+
 class TIMITDataset(Dataset):
     def __init__(self, X, y=None, window_size=11):
         self.window_size=window_size
@@ -135,7 +140,7 @@ learning_rate = 0.0001       # learning rate
 warmup_steps = 8
 
 # the path where checkpoint saved
-model_path = '../hw/2/model_moregood.ckpt'
+model_path = 'model_moregood.ckpt'
 
 # create model, define a loss function, and optimizer
 model = Classifier().to(device)
