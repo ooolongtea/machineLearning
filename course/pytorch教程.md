@@ -71,6 +71,7 @@ writer.close()
 
 ```
 **常见的Transform用法：**
+
 1. transforms.Normalize(mean=[],std=[])：output[channel] = (input[channel] - mean[channel]) / std[channel]
 实现了**输入标准化**，将每个通道的值调整到分布均值为0，方差(标准差)为1 的范围内。
 输出范围为[-1,1]
@@ -185,6 +186,7 @@ x = torch.tensor([1, 2, 3])
 print(x.unsqueeze(0))  # 输出 tensor([[1, 2, 3]])
 # 转置
 x = torch.tensor([[1, 2], [3, 4]])
+# 第0个维度和第1个维度交换·	
 print(x.transpose(0, 1))  # 输出 tensor([[1, 3], [2, 4]])
 # tensor只有一个元素时获取
 x = torch.tensor([3.14])
