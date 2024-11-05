@@ -887,5 +887,28 @@ def adam(learning_rate, beta1, beta2, epsilon, var, grad, v, r, t):
     return var, v, r
 ```
 
-## 5.常用网络模型
+## 5.Python库
 
+### 5.1 进度条（tqdm）
+
+1.设置进度条总长度,ncols为0自动显示宽度，desc是显示在进度条前的描述，unit是单位
+
+```python 
+pbar = tqdm(total=len(dataloader.dataset), ncols=0, desc="Valid", unit=" uttr")
+```
+
+2. 更新进度条
+update里面是更新长度
+```python
+	pbar.update(dataloader.batch_size)
+```
+
+3. 显示附加信息
+`set_postfix` 用于更新进度条的后缀信息，通常用于显示训练过程中的一些实时指标，比如损失（`loss`）和准确率（`accuracy`）。每次更新时，`tqdm` 会更新进度条的状态并显示这些实时计算的结果。
+```python
+    pbar.set_postfix(
+        loss=f"{running_loss / (i + 1):.2f}",
+        accuracy=f"{running_accuracy / (i + 1):.2f}",
+    )
+
+```
