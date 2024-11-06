@@ -915,4 +915,111 @@ update里面是更新长度
 
 ## 6. 归一化
 
-#### 6.1 
+#### 6.1 Batch Normalization
+
+计算均值和方差时，它**只会考虑当前批次中的特定特征维度**,不会跨所有特征维度进行计算。输入为`(batch_size, seq_len, d_model)`**，BN 对每一个特征维度分别计算一个均值和方差，共计算 `d_model` 个均值和方差**。
+
+在 PyTorch 中，`BatchNorm` 系列层用于实现批量归一化。常用的是 `BatchNorm1d`、`BatchNorm2d` 和 `BatchNorm3d`，分别用于 1D、2D 和 3D 数据。下面是 `BatchNorm1d` 和 `BatchNorm2d` 的使用示例：
+
+**1. Batch Normalizatoin**
+
+```python
+import torch
+import torch.nn as nn
+
+# 定义 BatchNorm1d 层
+batch_norm1d = nn.BatchNorm1d(num_features=10)
+
+# 创建输入数据 (batch_size, num_features)
+input_data = torch.randn(32, 10)  # 假设有 32 个样本，每个样本 10 维特征
+
+# 进行批量归一化
+output_data = batch_norm1d(input_data)
+print(output_data.shape)  # 输出: torch.Size([32, 10])
+```
+
+** 2. `BatchNorm2d` 示例**
+
+`BatchNorm2d` 常用于 2D 数据，例如图像数据。通常应用于卷积层输出，它将每个特征图的像素值进行归一化。
+
+```python
+import torch
+import torch.nn as nn
+
+# 定义 BatchNorm2d 层
+batch_norm2d = nn.BatchNorm2d(num_features=16)
+
+# 创建输入数据 (batch_size, num_channels, height, width)
+input_data = torch.randn(8, 16, 32, 32)  # 假设有 8 张图像，16 个通道，32x32 大小
+
+# 进行批量归一化
+output_data = batch_norm2d(input_data)
+print(output_data.shape)  # 输出: torch.Size([8, 16, 32, 32])
+```
+
+`num_features`：指定要归一化的特征数量，通常为通道数（对于 `BatchNorm2d` 和 `BatchNorm3d`），或特征维度（对于 `BatchNorm1d`）。
+
+`eps`：防止除零的小常数，默认为 `1e-5`。
+
+`momentum`：用于移动平均的动量，默认值为 `0.1`。
+
+`affine`：是否学习可学习的仿射参数（可训练的缩放和平移参数 `gamma` 和 `beta`），默认值为 `True`。
+
+**3.将 BatchNorm 应用于神经网络模型 **
+
+```python
+class SimpleCNN(nn.Module):
+    def __init__(self):
+        super(SimpleCNN, self).__init__()
+        self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1)
+        self.bn1 = nn.BatchNorm2d(16)  # 在卷积层之后使用 BatchNorm
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1)
+        self.bn2 = nn.BatchNorm2d(32)
+        self.fc1 = nn.Linear(32 * 8 * 8, 10)
+        self.bn_fc = nn.BatchNorm1d(10)  # 在全连接层之后使用 BatchNorm1d
+
+    def forward(self, x):
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = torch.relu(x)
+        x = self.conv2(x)
+        x = self.bn2(x)
+        x = torch.relu(x)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        x = self.bn_fc(x)
+        return x
+
+# 创建模型和数据
+model = SimpleCNN()
+input_data = torch.randn(4, 3, 8, 8)  # 假设有 4 张 RGB 图像
+
+# 前向传播
+output = model(input_data)
+print(output.shape)  # 输出: torch.Size([4, 10])
+```
+
+在训练模式下，`BatchNorm` 会计算当前 batch 的均值和方差，并对数据进行归一化。
+
+在评估模式下（`model.eval()`），`BatchNorm` 会使用整个训练集的统计均值和方差（通过滑动平均计算），而不是当前 batch 的统计量。 
+
+### 6.2 Layer Normalization
+
+输入`(batch_size, seq_len, d_model)`，对于每个位置（每个 `batch_size` 和 `seq_len` 对应的元素），Layer Normalization 会计算**该位置所有特征维度的均值和方差**。
+
+```python
+import torch
+import torch.nn as nn
+
+# 定义 LayerNorm 层
+d_model = 256
+layer_norm = nn.LayerNorm(d_model)
+
+# 创建一个形状为 (batch_size, seq_len, d_model) 的输入
+input_data = torch.randn(32, 50, d_model)  # 假设 batch_size=32，序列长度 seq_len=50
+
+# 使用 LayerNorm 归一化
+output_data = layer_norm(input_data)
+print(output_data.shape)  # 输出: torch.Size([32, 50, 256])
+```
+

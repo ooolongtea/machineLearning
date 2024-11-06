@@ -67,7 +67,7 @@ def collate_batch(batch):
     # Process features within a batch.
     """Collate a batch of data."""
     mel, speaker = zip(*batch)
-    # Because we train the model batch by batch, we need to pad the features in the same batch to make their lengths the same.
+    # 将每个序列填充到batch中最长序列的长度
     mel = pad_sequence(mel, batch_first=True, padding_value=-20)  # pad log 10^(-20) which is very small value.
     # mel: (batch size, length, 40)
     return mel, torch.FloatTensor(speaker).long()
