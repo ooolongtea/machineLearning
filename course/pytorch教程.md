@@ -484,7 +484,10 @@ self.bn1 = nn.BatchNorm2d(num_features=16)
 ```
 在训练时，BatchNorm2d 会使用当前批次的均值和方差，并在评估模式下（model.eval()），使用在训练过程中计算的移动均值和方差。
 2. 正则化层
+
 3. 线性层
+
+   线性层允许接受一维或多维输入，当输入是多维时，当输入是多维张量时，`Linear`层会对输入张量的**最后一维**进行线性变换，并且不会改变其他维度的结构。
 ```python
 torch.nn.Linear(in_features, # 输入的神经元个数
            out_features, # 输出神经元个数
