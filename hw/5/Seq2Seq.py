@@ -1,4 +1,5 @@
 import torch
+from Cython.Includes.numpy import dtype
 from d2l import  torch as d2l
 from torch import nn
 
@@ -38,3 +39,9 @@ class Seq2SeqDecoder(d2l.Decoder):
         output,state=self.rnn(X_and_context,state)
         output=self.dense(output).permute(1,0,2)
         return output,state
+
+def sequence_mask(x,valid_len=None,value=0):
+    max_len=x.size(1)
+    mask=torch.arange((max_len),device=x.device,dtype=torch.float32)[None,:]<valid_len[:,None]
+    x[~mask]=value
+    return x
